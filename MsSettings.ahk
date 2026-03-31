@@ -17,7 +17,7 @@ class VersionManager_MsSettings
     static _ := VersionManager_MsSettings._init()
     _init()    {
         global
-        MSSETTINGS_VERSION := "1.0.0"
+        MSSETTINGS_VERSION := "2.0.0"
         if (!this._verCheck(GETTHREADLOCALINPUTSETTINGS_VERSION, "1.0.0"))
             throw exception("getThreadLocalInputSettings version 1.x is required (minimum 1.0.0).")
         if (!this._verCheck(OSVERSION_VERSION, "2.0.0"))
@@ -61,7 +61,6 @@ class MsSettings
                         return btnEl.click()
                     }  catch  {
                         btnEl:=""
-                        el:=""
                         return false
                     }
                 case "WIN_11":
@@ -77,23 +76,30 @@ class MsSettings
                     }  catch  {
                         btn2El:=""
                         btn1El:=""
-                        el:=""
                         return false
                     }
             }
         }
-        setThreadLocalInputSettings(byRef el, opt:="", sefFocus:=true)    {
+        findThreadLocalInputSettingsCheckbox(byRef el, byRef cbEl:="")    {
+            cbEl:=""
             if (!isObject(el))
                 return false
             try    {
                 ;  7000ms
                 while (A_Index<=70) && !(cbEl:=el.findFirstBy("AutomationId=SystemSettings_Keyboard_InputLanguageSwitching_CheckBox"))
                     sleep 100
-                if (!cbEl)
-                    return false
+                return (!!cbEl)
+            }  catch  {
+                cbEl:=""
+            }
+        }
+        setThreadLocalInputSettings(byRef cbEl, opt:="", sefFocus:=true)    {
+            if (!isObject(cbEl))
+                return false
+            try    {
                 if (sefFocus)    {
                     loop    {
-                        SendInput % "{Tab}"
+                        sendInput % "{Tab}"
                         sleep 50
                     }  until (cbEl.HasKeyboardFocus || 8<A_Index)
                 }
@@ -102,7 +108,6 @@ class MsSettings
                 return true
             }  catch  {
                 cbEl:=""
-                el:=""
                 return false
             }
         }
@@ -142,7 +147,6 @@ class MsSettings
                     }  catch  {
                         editEl:=""
                         btnEl:=""
-                        el:=""
                         return false
                     }
                 case "WIN_11":
@@ -169,7 +173,6 @@ class MsSettings
                     }  catch  {
                         editEl:=""
                         btnEl:=""
-                        el:=""
                         return false
                     }
             }
